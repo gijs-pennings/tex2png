@@ -8,7 +8,7 @@
     prefix=tti@
 }
 
-% define option to use `article' (default) or `standalone' as base class
+% define option to use `article` (default) or `standalone` as base class
 \newif\iftti@standalone
 \def\tti@baseclass{article}
 \DeclareVoidOption{exportimgs}{
@@ -24,7 +24,7 @@
     \expandafter\PassOptionsToClass\expandafter{\CurrentOption}{\tti@baseclass}
 }
 
-% evaluate all options (within the family defined by \SetupKeyvalOptions)
+% evaluate all options (within the family defined by `\SetupKeyvalOptions`)
 \ProcessKeyvalOptions*
 
 % define export environment if it doesn't exist
@@ -33,13 +33,37 @@
 \fi
 
 \iftti@standalone
-    % configure `standalone' such that the content of each export environment is cropped (as much as
-    % as possible) on its own page
+    % If we use `\%` in the command definition below, the backslash never disappears from the
+    % command (possibly due to a `\detokenize` somewhere). Therefore, we:
+    %  1. temporarily categorize the percent sign as a "letter",
+    %  2. define a command that inserts a percent sign,
+    %  3. restore the percent sign as a "comment character".
+    \catcode`\%=11
+    \newcommand\percent{%}
+    \catcode`\%=14
+
+    % define ImageMagick command to convert pdf to png
+    \def\tti@command{
+        magick
+            -units PixelsPerInch
+            -density 288                % = 4*72
+            \noexpand\infile\space
+            -scale 25\percent\space     % instead of `resize`, since we shrink by integer multiple
+            -density 72                 % set density of png to 72 dpi (metadata)
+            -trim
+            \noexpand\outfile
+    }
+
+    % configure `standalone` such that the content of each export environment is cropped on a
+    % separate page and then converted to a png using ImageMagick
     \PassOptionsToClass{
-        preview,
-        border=1mm,
+        preview,                % automatically ignores content outside export environments
+        border=1mm,             % solves https://tex.stackexchange.com/q/53220; trimmed off later
         multi=\tti@exportenv,
-        varwidth
+        varwidth,               % not always perfect, but further trimmed by ImageMagick
+        convert={
+            command=\noexpand\tti@command
+        }
     }{standalone}
 \fi
 
