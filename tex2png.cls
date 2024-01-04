@@ -1,19 +1,19 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tex2img}[2024-01-04 Compile document to images]
+\ProvidesClass{tex2png}[2024-01-04 Compile document to images]
 
 % import package to process key-value options
 \RequirePackage{kvoptions}
 \SetupKeyvalOptions{
-    family=tti,
-    prefix=tti@
+    family=ttp,
+    prefix=ttp@
 }
 
 % define option to use `article` (default) or `standalone` as base class
-\newif\iftti@standalone
-\def\tti@baseclass{article}
+\newif\ifttp@standalone
+\def\ttp@baseclass{article}
 \DeclareVoidOption{exportimgs}{
-    \tti@standalonetrue
-    \gdef\tti@baseclass{standalone}
+    \ttp@standalonetrue
+    \gdef\ttp@baseclass{standalone}
 }
 
 % define option to customize name of export environment
@@ -25,15 +25,15 @@
 
 % pass all other options to base class
 \DeclareDefaultOption{
-    \expandafter\PassOptionsToClass\expandafter{\CurrentOption}{\tti@baseclass}
+    \expandafter\PassOptionsToClass\expandafter{\CurrentOption}{\ttp@baseclass}
 }
 
 % evaluate all options (within the family defined by `\SetupKeyvalOptions`)
 \ProcessKeyvalOptions*
 
 % define export environment if it doesn't exist (regardless of base class)
-\ifcsname\tti@exportenv\endcsname\else
-    \newenvironment\tti@exportenv\empty\empty
+\ifcsname\ttp@exportenv\endcsname\else
+    \newenvironment\ttp@exportenv\empty\empty
 \fi
 
 % If we use `\%` in the command definition below, the backslash never disappears from the command
@@ -45,18 +45,18 @@
 \newcommand\percent{%}
 \catcode`\%=14
 
-\iftti@standalone
+\ifttp@standalone
     % compute density and scale arguments
-    \def\tti@density{\fpeval{72 * \tti@exportsupersample * \tti@exportscale}}
-    \def\tti@scale{\fpeval{100 / \tti@exportsupersample}\percent}
+    \def\ttp@density{\fpeval{72 * \ttp@exportsupersample * \ttp@exportscale}}
+    \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\percent}
 
     % define ImageMagick command to convert pdf to png
-    \def\tti@command{
+    \def\ttp@command{
         magick
             -units PixelsPerInch
-            -density \tti@density\space
+            -density \ttp@density\space
             \noexpand\infile\space
-            -scale \tti@scale\space
+            -scale \ttp@scale\space
             -density 72                 % set density of png to 72 dpi (metadata)
             -trim
             \noexpand\outfile
@@ -67,13 +67,13 @@
     \PassOptionsToClass{
         preview,                % automatically ignores content outside export environments
         border=1mm,             % solves https://tex.stackexchange.com/q/53220; trimmed off later
-        multi=\tti@exportenv,
+        multi=\ttp@exportenv,
         varwidth,               % not always perfect, but further trimmed by ImageMagick
         convert={
-            command=\noexpand\tti@command
+            command=\noexpand\ttp@command
         }
     }{standalone}
 \fi
 
 % load base class
-\LoadClass{\tti@baseclass}
+\LoadClass{\ttp@baseclass}
