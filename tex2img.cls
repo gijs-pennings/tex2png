@@ -16,6 +16,9 @@
     \gdef\tti@baseclass{standalone}
 }
 
+% define option to customize name of export environment
+\DeclareStringOption[exportimg]{exportenv}
+
 % pass all other options to base class
 \DeclareDefaultOption{
     \expandafter\PassOptionsToClass\expandafter{\CurrentOption}{\tti@baseclass}
@@ -24,18 +27,18 @@
 % evaluate all options (within the family defined by \SetupKeyvalOptions)
 \ProcessKeyvalOptions*
 
-% define `exportimg' environment if it does not exist
-\ifdefined\exportimg\else
-    \newenvironment{exportimg}{}{}
+% define export environment if it doesn't exist
+\ifcsname\tti@exportenv\endcsname\else
+    \newenvironment\tti@exportenv\empty\empty
 \fi
 
 \iftti@standalone
-    % configure `standalone' such that the content of each `exportimg' environment is cropped (as
-    % much as possible) on its own page
+    % configure `standalone' such that the content of each export environment is cropped (as much as
+    % as possible) on its own page
     \PassOptionsToClass{
         preview,
         border=1mm,
-        multi={exportimg},
+        multi=\tti@exportenv,
         varwidth
     }{standalone}
 \fi
