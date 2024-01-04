@@ -19,6 +19,10 @@
 % define option to customize name of export environment
 \DeclareStringOption[exportimg]{exportenv}
 
+% define options to control quality and size of images
+\DeclareStringOption[2]{exportsupersample}
+\DeclareStringOption[1.5]{exportscale}
+
 % pass all other options to base class
 \DeclareDefaultOption{
     \expandafter\PassOptionsToClass\expandafter{\CurrentOption}{\tti@baseclass}
@@ -27,28 +31,32 @@
 % evaluate all options (within the family defined by `\SetupKeyvalOptions`)
 \ProcessKeyvalOptions*
 
-% define export environment if it doesn't exist
+% define export environment if it doesn't exist (regardless of base class)
 \ifcsname\tti@exportenv\endcsname\else
     \newenvironment\tti@exportenv\empty\empty
 \fi
 
+% If we use `\%` in the command definition below, the backslash never disappears from the command
+% (possibly due to a `\detokenize` somewhere). Therefore, we:
+%  1. temporarily categorize the percent sign as a "letter",
+%  2. define a command that inserts a percent sign,
+%  3. restore the percent sign as a "comment character".
+\catcode`\%=11
+\newcommand\percent{%}
+\catcode`\%=14
+
 \iftti@standalone
-    % If we use `\%` in the command definition below, the backslash never disappears from the
-    % command (possibly due to a `\detokenize` somewhere). Therefore, we:
-    %  1. temporarily categorize the percent sign as a "letter",
-    %  2. define a command that inserts a percent sign,
-    %  3. restore the percent sign as a "comment character".
-    \catcode`\%=11
-    \newcommand\percent{%}
-    \catcode`\%=14
+    % compute density and scale arguments
+    \def\tti@density{\fpeval{72 * \tti@exportsupersample * \tti@exportscale}}
+    \def\tti@scale{\fpeval{100 / \tti@exportsupersample}\percent}
 
     % define ImageMagick command to convert pdf to png
     \def\tti@command{
         magick
             -units PixelsPerInch
-            -density 288                % = 4*72
+            -density \tti@density\space
             \noexpand\infile\space
-            -scale 25\percent\space     % instead of `resize`, since we shrink by integer multiple
+            -scale \tti@scale\space
             -density 72                 % set density of png to 72 dpi (metadata)
             -trim
             \noexpand\outfile
