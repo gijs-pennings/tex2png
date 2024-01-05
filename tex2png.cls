@@ -58,13 +58,14 @@
     \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\percent}
 
     % define ImageMagick command to convert pdf to png
+    % for gm see: https://sourceforge.net/p/graphicsmagick/discussion/250738/thread/8643b1af/#0fdf
     \def\ttp@command{
         magick
             -units PixelsPerInch
             -density \ttp@density\space
             \noexpand\infile\space
             -scale \ttp@scale\space
-            -density 72                 % set density of png to 72 dpi (metadata)
+            -density 72                         % set density of png to 72 dpi (metadata only)
             -trim
           \ifx\ttp@exportbg\empty
             -bordercolor transparent
@@ -76,6 +77,7 @@
           \ifx\ttp@exportborder\empty\else
             -border \ttp@exportborder\space
           \fi
+            +adjoin                             % force separate output files (required for gm)
             \noexpand\outfile
     }
 
