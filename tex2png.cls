@@ -23,6 +23,9 @@
 \DeclareStringOption[2]{exportsupersample}
 \DeclareStringOption[1.5]{exportscale}
 
+% define option to set background color (instead of transparent)
+\DeclareStringOption{exportbg}[white]
+
 % pass all other options to base class
 \DeclareDefaultOption{
     \expandafter\PassOptionsToClass\expandafter{\CurrentOption}{\ttp@baseclass}
@@ -59,6 +62,10 @@
             -scale \ttp@scale\space
             -density 72                 % set density of png to 72 dpi (metadata)
             -trim
+          \ifx\ttp@exportbg\empty\else
+            -background \ttp@exportbg\space
+            -alpha remove
+          \fi
             \noexpand\outfile
     }
 
