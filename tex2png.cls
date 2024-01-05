@@ -16,15 +16,19 @@
     \gdef\ttp@baseclass{standalone}
 }
 
-% define option to customize name of export environment
+% define option to customize name of export environment (default: `exportimg`)
 \DeclareStringOption[exportimg]{exportenv}
 
 % define options to control quality and size of images
 \DeclareStringOption[2]{exportsupersample}
 \DeclareStringOption[1.5]{exportscale}
 
-% define option to set background color (instead of transparent)
+% define option to set background color, instead of transparent (default)
+% this is also used as border color
 \DeclareStringOption{exportbg}[white]
+
+% define option to set border width (default: 5px all sides)
+\DeclareStringOption[5]{exportborder}
 
 % pass all other options to base class
 \DeclareDefaultOption{
@@ -62,9 +66,15 @@
             -scale \ttp@scale\space
             -density 72                 % set density of png to 72 dpi (metadata)
             -trim
-          \ifx\ttp@exportbg\empty\else
+          \ifx\ttp@exportbg\empty
+            -bordercolor transparent
+          \else
             -background \ttp@exportbg\space
+            -bordercolor \ttp@exportbg\space
             -alpha remove
+          \fi
+          \ifx\ttp@exportborder\empty\else
+            -border \ttp@exportborder\space
           \fi
             \noexpand\outfile
     }
