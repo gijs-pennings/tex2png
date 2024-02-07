@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tex2png}[2024-01-04 Compile document to images]
+\ProvidesClass{tex2png}[2024-02-07 Compile document to images]
 
 % import package to process key-value options
 \RequirePackage{kvoptions}
@@ -9,10 +9,10 @@
 }
 
 % define option to use `article` (default) or `standalone` as base class
-\newif\ifttp@standalone
+\newif\ifexportimgs
 \def\ttp@baseclass{article}
 \DeclareVoidOption{exportimgs}{
-    \ttp@standalonetrue
+    \exportimgstrue
     \gdef\ttp@baseclass{standalone}
 }
 
@@ -52,7 +52,7 @@
 \newcommand\percent{%}
 \catcode`\%=14
 
-\ifttp@standalone
+\ifexportimgs
     % compute density and scale arguments
     \def\ttp@density{\fpeval{72 * \ttp@exportsupersample * \ttp@exportscale}}
     \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\percent}
