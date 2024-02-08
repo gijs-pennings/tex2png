@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tex2png}[2024-02-07 Compile document to images]
+\ProvidesClass{tex2png}[2024-02-08 Compile document to images]
 
 \RequirePackage{kvoptions}  % to process key-value options
 \RequirePackage{shellesc}   % to run system commands
@@ -92,7 +92,7 @@
     % page and then converted to a png using ImageMagick
     \PassOptionsToClass{
         preview,                % automatically ignores content outside export environments
-        border=1mm,             % solves https://tex.stackexchange.com/q/53220; trimmed off later
+        border=1cm,             % solves https://tex.stackexchange.com/q/53220; trimmed off later
         multi=\ttp@exportenv,
         varwidth,               % not always perfect, but further trimmed by ImageMagick
         convert={
