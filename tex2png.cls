@@ -62,7 +62,6 @@
     \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\percent}
 
     % define ImageMagick command to convert pdf to png
-    % for gm see: https://sourceforge.net/p/graphicsmagick/discussion/250738/thread/8643b1af/#0fdf
     \def\ttp@command{
         magick
             -units PixelsPerInch
@@ -81,7 +80,6 @@
           \ifx\ttp@exportborder\empty\else
             -border \ttp@exportborder\space
           \fi
-            +adjoin                             % force separate output files (required for gm)
             \ttp@exportdir/\noexpand\outfile
     }
 
