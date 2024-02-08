@@ -1,8 +1,9 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{tex2png}[2024-02-07 Compile document to images]
 
-% import package to process key-value options
-\RequirePackage{kvoptions}
+\RequirePackage{kvoptions}  % to process key-value options
+\RequirePackage{shellesc}   % to run system commands
+
 \SetupKeyvalOptions{
     family=ttp,
     prefix=ttp@
@@ -15,6 +16,9 @@
     \exportimgstrue
     \gdef\ttp@baseclass{standalone}
 }
+
+% define option to set output directory for images (default: current folder)
+\DeclareStringOption[.]{exportdir}
 
 % define option to customize name of export environment (default: `exportimg`)
 \DeclareStringOption[exportimg]{exportenv}
@@ -78,11 +82,14 @@
             -border \ttp@exportborder\space
           \fi
             +adjoin                             % force separate output files (required for gm)
-            \noexpand\outfile
+            \ttp@exportdir/\noexpand\outfile
     }
 
-    % configure `standalone` such that the content of each export environment is cropped on a
-    % separate page and then converted to a png using ImageMagick
+    % create image output directory
+    \ShellEscape{mkdir \ttp@exportdir}
+
+    % configure standalone such that the content of each export environment is cropped on a separate
+    % page and then converted to a png using ImageMagick
     \PassOptionsToClass{
         preview,                % automatically ignores content outside export environments
         border=1mm,             % solves https://tex.stackexchange.com/q/53220; trimmed off later
