@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tex2png}[2024-02-08 Compile document to images]
+\ProvidesClass{tex2png}[2024-02-12 v1.0 Compile document to images]
 
 \RequirePackage{kvoptions}  % to process key-value options
 \RequirePackage{shellesc}   % to run system commands
@@ -25,7 +25,7 @@
 
 % define options to control quality and size of images
 \DeclareStringOption[2]{exportsupersample}
-\DeclareStringOption[1.5]{exportscale}
+\DeclareStringOption[2]{exportscale}
 
 % define option to set background color, instead of transparent (default)
 % this is also used as border color
@@ -42,11 +42,6 @@
 % evaluate all options (within the family defined by `\SetupKeyvalOptions`)
 \ProcessKeyvalOptions*
 
-% define export environment if it doesn't exist (regardless of base class)
-\ifcsname\ttp@exportenv\endcsname\else
-    \newenvironment\ttp@exportenv\empty\empty
-\fi
-
 % If we use `\%` in the command definition below, the backslash never disappears from the command
 % (possibly due to a `\detokenize` somewhere). Therefore, we:
 %  1. temporarily categorize the percent sign as a "letter",
@@ -58,17 +53,18 @@
 
 \ifexportimgs
     % compute density and scale arguments
-    \def\ttp@density{\fpeval{72 * \ttp@exportsupersample * \ttp@exportscale}}
+    \def\ttp@densityout{\fpeval{72 * \ttp@exportscale}}
+    \def\ttp@densityin{\fpeval{\ttp@densityout * \ttp@exportsupersample}}
     \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\percent}
 
     % define ImageMagick command to convert pdf to png
     \def\ttp@command{
         magick
             -units PixelsPerInch
-            -density \ttp@density\space
+            -density \ttp@densityin\space
             \noexpand\infile\space
             -scale \ttp@scale\space
-            -density 72                         % set density of png to 72 dpi (metadata only)
+            -density \ttp@densityout\space    % metadata only
             -trim
           \ifx\ttp@exportbg\empty
             -bordercolor transparent
@@ -97,6 +93,13 @@
             command=\noexpand\ttp@command
         }
     }{standalone}
+\else
+    % define export environment if it doesn't exist
+    \AtBeginDocument{
+        \ifcsname\ttp@exportenv\endcsname\else
+            \newenvironment\ttp@exportenv\empty\empty
+        \fi
+    }
 \fi
 
 % load base class

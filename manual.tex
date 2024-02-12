@@ -1,0 +1,154 @@
+\documentclass[a4paper, exportdir=manual-output, exportenv=option,
+    % uncomment the following line to enable export mode
+    % exportimgs
+]{tex2png}
+
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xurl}
+
+\usepackage[hidelinks, pdfusetitle]{hyperref}
+
+% adds item to description list for class option
+% used instead of `exportimg`
+\newenvironment{option}[2]{%
+    \item[%
+        \texttt{#1}%
+        \ifx#2\empty\else=#2\fi%
+    ]%
+}{}
+
+% disable footnotes in export mode
+\ifexportimgs
+    \makeatletter
+    \let\footnote\@gobble
+    \makeatother
+\fi
+
+\pdfstringdefDisableCommands{
+    \let\,\relax
+    \let\textsc\relax
+}
+
+\title{The \textsc{tex2png} class}
+\author{G.\,P.\,S. Pennings}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}\noindent
+    The \texttt{tex2png} class can be used to compile (parts of) a \LaTeX{} document to high-quality \textsc{png}%
+    \footnote{Since \textsc{png} is widely supported, lossless, and supports transparency, it is arguably the best raster-graphics format for text and diagrams. Therefore, no other image formats are supported.}
+    images, without the need to manually run external tools.
+    These can be used, for example, in presentations or on the web when better alternatives are unavailable.
+
+    A key feature of \texttt{tex2png} is the ability to quickly switch between two \emph{modes}:
+    you can compile designated parts of the document on separate pages and automatically convert them to cropped images (\emph{export} mode),
+    or you can compile the document normally to produce an overview of all content (\emph{overview} mode).
+
+    The class is essentially a user-friendly wrapper around the \texttt{standalone} class, which, in turn, extends the standard \texttt{article}.
+    This document is simultaneously the manual of \texttt{tex2png}, as well as an example of its use.
+\end{abstract}
+
+
+
+\section{Dependencies}
+\label{sec:dependencies}
+
+To convert each page of the \textsc{pdf} to an image, \texttt{tex2png} runs ImageMagick\footnote{\url{https://imagemagick.org/script/download.php}}\!, which in turns depends on Ghostscript\footnote{\url{https://ghostscript.com/releases/gsdnld.html}}\!.
+These are both available on Windows, macOS (using Homebrew), and Linux.
+This class was tested with ImageMagick~7.1.1--21 and Ghostscript~10.02.1, but other versions (of the same major version) will likely work as well.
+
+
+
+\section{Quick start}
+\label{sec:usage}
+
+\begin{enumerate}
+    \item Install the dependencies listed in \autoref{sec:dependencies};
+
+    \item set your document's class to \texttt{tex2png} and enable the option \texttt{exportimgs};
+    \begin{center}
+        \verb@\documentclass[..., exportimgs]{tex2png}@
+    \end{center}
+
+    \item enclose the parts of your document that you want to convert to images in \texttt{exportimg} environments;
+    % if no such environments are used, no PDF (or PNG) is generated
+    \begin{center}
+        \verb@\begin{exportimg} ... \end{exportimg}@
+    \end{center}
+
+    \item and compile your document with the \texttt{-shell-escape} flag\footnote{This is potentially dangerous, since it allows for arbitrary code execution by \LaTeX{} packages. However, this flag is required to use this class.}\!.
+    \begin{center}
+        \verb@pdflatex -shell-escape document.tex@
+    \end{center}
+\end{enumerate}
+
+\noindent
+Each page in the \textsc{pdf} has (excessively) wide margins, which are trimmed off by ImageMagick.
+These margins ensure that, for instance, characters protruding from their boxes and list \verb@\item@'s are not cut off.%
+\footnote{For an example, see \url{https://tex.stackexchange.com/q/53220}.}
+
+Unfortunately, \texttt{tex2png} is not perfect: content may look different in export mode compared to overview mode.
+Make sure to double check that the images look as intended.
+
+% using this class to export figures is probably a bad idea: raster graphics will lose quality, and vector graphics should be kept as-is or converted directly
+
+
+
+\section{Class options}
+\label{sec:options}
+
+This section lists all available options in \texttt{tex2png}.
+Unrecognized options are passed to \texttt{article}.\footnote{Actually, if export mode is enabled, the options are passed to \texttt{standalone}, which then passes them to \texttt{article}. It is not recommended, however, to change the behavior of \texttt{standalone}.}
+
+\begin{description}[font=\normalfont, style=nextline]
+    \begin{option}{exportimgs}{}
+        This option enables export mode: the base class is changed to \texttt{standalone} and each \texttt{exportimg} environment is converted to an image (all content outside these environments is ignored).
+        Otherwise, overview mode is active, with \texttt{article} as the base class.
+    \end{option}
+
+    \begin{option}{exportdir}{\textlangle\textit{path}\textrangle}
+        By default, the images are created in the current directory. This option can be used to change the output directory for images.
+        If the specified directory does not exist, it is first created using a simple call to \texttt{mkdir}. For paths other than a single subdirectory, bear in mind the differences in path separator and implementation of \texttt{mkdir} between OSs.
+    \end{option}
+
+    \begin{option}{exportenv}{\textlangle\textit{string}\textrangle}
+        By default, the ``exportimg'' environment is used to denote which parts of the document should be converted to images. With this option, you can change which environment is used.
+        You can use existing (e.g., ``equation'') or custom environments for this. If the environment is not defined in the preamble, \texttt{tex2png} defines it for you (without functionality).
+    \end{option}
+
+    \begin{option}{exportsupersample}{\textlangle\textit{float}\textrangle}
+        To improve image quality, the \textsc{pdf} is \emph{supersampled}, i.e., rendered at a higher resolution and then scaled down. The default supersampling rate is~$2$, and it is recommended to leave it unchanged.
+    \end{option}
+
+    \begin{option}{exportscale}{\textlangle\textit{float}\textrangle}
+        Ignoring supersampling, the \textsc{pdf} is rendered at $72x$ pixels per inch, where~$x$ is the scale specified by this option. The default is $x=2$.
+    \end{option}
+
+    \begin{option}{exportbg}{{[\textit{color}]}}
+        This option can be used to set the image background color, which is trans\-parent by default.
+        Any color supported by ImageMagick\footnote{\url{https://imagemagick.org/script/color.php}} is allowed.
+        If this option is specified without a color, white will be used.
+        The same color is used for the border.
+        Note that if your document already has a background (e.g., using the \texttt{pagecolor} package), that will take precedence.
+    \end{option}
+
+    \begin{option}{exportborder}{\textlangle\textit{string}\textrangle}
+        After trimming the \textsc{pdf} margins, by default, a border of $5$px is added on all sides. The border width can be customized using this option.\footnote{See ImageMagick for the range of possible values: \url{https://imagemagick.org/script/command-line-options.php\#border}.}
+    \end{option}
+\end{description}
+
+
+
+% advanced usage:
+% • restricted shell
+% • \ifexportimgs
+% • how to get correct \ref's
+
+% future work:
+% • option to customize base class
+% • improve cropping of PDF pages so they can be used as vector graphics
+
+\end{document}
