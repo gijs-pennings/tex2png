@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tex2png}[2024-02-12 v1.0 Compile document to images]
+\ProvidesClass{tex2png}[2024-02-12 v1.0.0 Compile document to images]
 
 \RequirePackage{kvoptions}  % to process key-value options
 \RequirePackage{shellesc}   % to run system commands

@@ -19,6 +19,7 @@
 }{}
 
 % disable footnotes in export mode
+% note that this will slightly alter text justification
 \ifexportimgs
     \makeatletter
     \let\footnote\@gobble
@@ -32,6 +33,7 @@
 
 \title{The \textsc{tex2png} class}
 \author{G.\,P.\,S. Pennings}
+\date{February 12, 2024\enskip(v1.0.0)}
 
 \begin{document}
 
@@ -41,7 +43,7 @@
     The \texttt{tex2png} class can be used to compile (parts of) a \LaTeX{} document to high-quality \textsc{png}%
     \footnote{Since \textsc{png} is widely supported, lossless, and supports transparency, it is arguably the best raster-graphics format for text and diagrams. Therefore, no other image formats are supported.}
     images, without the need to manually run external tools.
-    These can be used, for example, in presentations or on the web when better alternatives are unavailable.
+    These images can be used, for example, in presentations or on the web when better alternatives are unavailable.
 
     A key feature of \texttt{tex2png} is the ability to quickly switch between two \emph{modes}:
     you can compile designated parts of the document on separate pages and automatically convert them to cropped images (\emph{export} mode),
@@ -60,10 +62,12 @@ To convert each page of the \textsc{pdf} to an image, \texttt{tex2png} runs Imag
 These are both available on Windows, macOS (using Homebrew), and Linux.
 This class was tested with ImageMagick~7.1.1--21 and Ghostscript~10.02.1, but other versions (of the same major version) will likely work as well.
 
+An alternative version is available which uses GraphicsMagick instead of ImageMagick.
+However, this version does not support transparent backgrounds, so ImageMagick is recommended.
+
 
 
 \section{Quick start}
-\label{sec:usage}
 
 \begin{enumerate}
     \item Install the dependencies listed in \autoref{sec:dependencies};
@@ -85,7 +89,6 @@ This class was tested with ImageMagick~7.1.1--21 and Ghostscript~10.02.1, but ot
     \end{center}
 \end{enumerate}
 
-\noindent
 Each page in the \textsc{pdf} has (excessively) wide margins, which are trimmed off by ImageMagick.
 These margins ensure that, for instance, characters protruding from their boxes and list \verb@\item@'s are not cut off.%
 \footnote{For an example, see \url{https://tex.stackexchange.com/q/53220}.}
@@ -98,7 +101,6 @@ Make sure to double check that the images look as intended.
 
 
 \section{Class options}
-\label{sec:options}
 
 This section lists all available options in \texttt{tex2png}.
 Unrecognized options are passed to \texttt{article}.\footnote{Actually, if export mode is enabled, the options are passed to \texttt{standalone}, which then passes them to \texttt{article}. It is not recommended, however, to change the behavior of \texttt{standalone}.}
@@ -139,6 +141,13 @@ Unrecognized options are passed to \texttt{article}.\footnote{Actually, if expor
         After trimming the \textsc{pdf} margins, by default, a border of $5$px is added on all sides. The border width can be customized using this option.\footnote{See ImageMagick for the range of possible values: \url{https://imagemagick.org/script/command-line-options.php\#border}.}
     \end{option}
 \end{description}
+
+
+
+\section{Acknowledgments}
+
+This class was developed as part of a student assistantship at the Eindhoven University of Technology (TU/e).
+Special thanks to Tom Verhoeff for the original idea and his meticulous testing.
 
 
 
