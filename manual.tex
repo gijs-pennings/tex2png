@@ -50,7 +50,8 @@
     or you can compile the document normally to produce an overview of all content (\emph{overview} mode).
 
     The class is essentially a user-friendly wrapper around the \texttt{standalone} class, which, in turn, extends the standard \texttt{article}.
-    This document is simultaneously the manual of \texttt{tex2png}, as well as an example of its use.
+    This document is simultaneously the manual of \texttt{tex2png}, as well as an example of its use.%
+    \footnote{When compiled in export mode, the resulting images can be found in the ``manual-output'' directory.}
 \end{abstract}
 
 
@@ -62,7 +63,7 @@ To convert each page of the \textsc{pdf} to an image, \texttt{tex2png} runs Imag
 These are both available on Windows, macOS (using Homebrew), and Linux.
 This class was tested with ImageMagick~7.1.1--21 and Ghostscript~10.02.1, but other versions (of the same major version) will likely work as well.
 
-An alternative version is available which uses GraphicsMagick instead of ImageMagick.
+An alternative version is available which uses GraphicsMagick instead of ImageMagick.\footnote{This version can be found in the ``gm'' branch of the repository: \url{https://gitlab.tue.nl/edu-tools/latex-postprocessor}.}
 However, this version does not support transparent backgrounds, so ImageMagick is recommended.
 
 
