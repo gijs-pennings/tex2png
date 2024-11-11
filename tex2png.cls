@@ -42,20 +42,11 @@
 % evaluate all options (within the family defined by `\SetupKeyvalOptions`)
 \ProcessKeyvalOptions*
 
-% If we use `\%` in the command definition below, the backslash never disappears from the command
-% (possibly due to a `\detokenize` somewhere). Therefore, we:
-%  1. temporarily categorize the percent sign as a "letter",
-%  2. define a command that inserts a percent sign,
-%  3. restore the percent sign as a "comment character".
-\catcode`\%=11
-\newcommand\percent{%}
-\catcode`\%=14
-
 \ifexportimgs
     % compute density and scale arguments
     \def\ttp@densityout{\fpeval{72 * \ttp@exportscale}}
     \def\ttp@densityin{\fpeval{\ttp@densityout * \ttp@exportsupersample}}
-    \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\percent}
+    \def\ttp@scale{\fpeval{100 / \ttp@exportsupersample}\@percentchar}
 
     % define ImageMagick command to convert pdf to png
     \def\ttp@command{
