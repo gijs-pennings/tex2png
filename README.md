@@ -1,7 +1,7 @@
 # `tex2png`
 
-A LaTeX document class that can be used to compile equations, diagrams, or any other content to images for, e.g., use on [Ans](https://ans.app/).
-Refer to the [manual](manual.pdf) for more information.
+Compile equations, diagrams, or anything else from LaTeX to images.
+See the [manual](manual.pdf) for more details.
 
-The manual's [source](manual.tex) shows an example of how to use `tex2png`.
-The output images can be found in the [manual-output/](manual-output) directory.
+The manual's [source](manual.tex) is itself an example of how to use `tex2png`.
+The resulting images are in the [manual-output/](manual-output) directory.
